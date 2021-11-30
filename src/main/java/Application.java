@@ -24,7 +24,17 @@ public class Application {
         }
         Gson gson = new Gson();
         NewsApiResponse newsApiResponse = gson.fromJson(gsonData, NewsApiResponse.class);
-        try (PrintWriter zapis = new PrintWriter("plik.txt", StandardCharsets.UTF_8)) {
+        if (newsApiResponse.status.equals("error")) {
+            System.err.println("The server has return an error ");
+            System.exit(1);
+        }
+        String fileName;
+        if (args.length < 1) {
+            fileName = "articles.txt";
+        } else {
+            fileName = args[0];
+        }
+        try (PrintWriter zapis = new PrintWriter(fileName, StandardCharsets.UTF_8)) {
             for (Article article : newsApiResponse.articles)
                 zapis.println(article.title + ':' + article.description + ':' + article.author);
         } catch (Exception ee) {
