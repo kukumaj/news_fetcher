@@ -1,0 +1,1 @@
+To start the program you have to provide `API_KEY` environmental variable
