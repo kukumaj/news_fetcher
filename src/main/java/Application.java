@@ -5,6 +5,7 @@ import okhttp3.Response;
 
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 
 public class Application {
     public static void main(String[] args) {
@@ -16,7 +17,7 @@ public class Application {
                 .build();
         String gsonData;
         try (Response response = client.newCall(request).execute()) {
-            gsonData = response.body().string();
+            gsonData = Objects.requireNonNull(response.body()).string();
         } catch (Exception e) {
             System.err.println("Some errors");
             System.exit(1);
@@ -34,9 +35,9 @@ public class Application {
         } else {
             fileName = args[0];
         }
-        try (PrintWriter zapis = new PrintWriter(fileName, StandardCharsets.UTF_8)) {
+        try (PrintWriter record = new PrintWriter(fileName, StandardCharsets.UTF_8)) {
             for (Article article : newsApiResponse.articles)
-                zapis.println(article.title + ':' + article.description + ':' + article.author);
+                record.println(article.title + ':' + article.description + ':' + article.author);
         } catch (Exception ee) {
             System.err.println("file writing failed");
             System.exit(1);
