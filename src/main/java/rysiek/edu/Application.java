@@ -1,3 +1,5 @@
+package rysiek.edu;
+
 import com.google.gson.Gson;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -9,14 +11,20 @@ import java.util.Objects;
 
 public class Application {
     public static void main(String[] args) {
-
+        if (args.length < 1) {
+            System.out.println("You must provide apikey as the first parameter of the program. You can also provide output file name as the second parameter. This parameter is optional. The default parameter is articles.txt ");
+            System.exit(1);
+        }
         OkHttpClient client = new OkHttpClient();
-        String api_key = System.getenv("API_KEY");
         Request request = new Request.Builder()
-                .url("https://newsapi.org/v2/top-headlines?country=pl&category=business&apiKey=" + api_key)
+                .url("https://newsapi.org/v2/top-headlines?country=pl&category=business&apiKey=" + args[0])
                 .build();
         String gsonData;
         try (Response response = client.newCall(request).execute()) {
+            if (response.code() != 200){
+                System.out.println("Your request wasn't correctly processed");
+                System.exit(1);
+            }
             gsonData = Objects.requireNonNull(response.body()).string();
         } catch (Exception e) {
             System.err.println("Some errors");
@@ -30,14 +38,15 @@ public class Application {
             System.exit(1);
         }
         String fileName;
-        if (args.length < 1) {
+        if (args.length < 2) {
             fileName = "articles.txt";
+
         } else {
-            fileName = args[0];
+            fileName = args[1];
         }
-        try (PrintWriter record = new PrintWriter(fileName, StandardCharsets.UTF_8)) {
+        try (PrintWriter writer = new PrintWriter(fileName, StandardCharsets.UTF_8)) {
             for (Article article : newsApiResponse.articles)
-                record.println(article.title + ':' + article.description + ':' + article.author);
+                writer.println(article.author + ':' + article.title + ':' + article.description );
         } catch (Exception ee) {
             System.err.println("file writing failed");
             System.exit(1);

@@ -1,3 +1,5 @@
+package rysiek.edu;
+
 import java.util.List;
 
 public class NewsApiResponse {
